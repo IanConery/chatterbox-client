@@ -16,7 +16,9 @@
 
 var app = {}
 app.init = function() {
-  app.fetch();
+  // app.fetch();
+  var messages = new Messages();
+  var messagesView = new MessageBoard({model: messages}); 
 }
 
 app.fetch = function() {
@@ -52,39 +54,53 @@ app.send = function(message) {
 }
 
 
-
+/* BACKBONE */
+// model
 var Message = Backbone.Model.extend({
-
-  //get all the messages and display all the messages
-
-  initialize: function(data){
-    this.set('username', data.username);
-    this.set('text', data.text);
-    this.set('roomname', data.roomname);
-  },
-  // execute either d3 or JQuery post request to the parse server with username text and roomname as in the fields
-  post: function(){
-    console.log('post')
-  }
-  
 });
-
+// collection of model
 var Messages = Backbone.Collection.extend({
-  model: Message
+  model: Message,
+  url: 'https://api.parse.com/1/classes/chatterbox',
+  parse: function(response){
+    return response.results
+  },
+  sync: function(method, model, options){
+    var that = this;
+    var params = _.extend({
+      type: 'GET',
+      dataType: 'JSON',
+      url: that.url
+    }, options);
+    return $.ajax('')
+  }
 });
-
-
+// view of collection
 var MessageBoard = Backbone.View.extend({
   // keeps track of the changes
   initialize: function(){
-    this.model.on('change', function(){
-      this.render()
-    }, this)
+
+    // we will need that for looping over results
+    this.collection = new Messages();
+    var that = this;
+    this.collection.fetch({
+      success: function(){
+        console.log('beep');
+      }
+    });
+
+
+
+    //  on success, each loop to return render for each object
+
+    // this.model.on('change', function(){
+    //   this.render()
+    // }, this)
   },
   // runs when the values are changed and prepends it to our html
   render: function(){
-    console.log(this.model.get('text'));
-    console.log('rendering');
+    // console.log(this.model.get('text'));
+    // console.log('rendering');
     // return html .. 
   }
 });
