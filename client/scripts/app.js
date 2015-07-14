@@ -14,15 +14,18 @@
 //   dataType: 'JSON'
 // });
 
+// var j = $;
+
 var app = {}
+// app.$ = function($) {
+//   return $;
+// }
 app.init = function() {
   // app.fetch();
   var messages = new Messages();
   var messagesView = new MessageBoard({model: messages}); 
 
   var html = messagesView.render();
-  // console.log($);
-  $('body').append('<p>test</p>');
 }
 
 
@@ -56,7 +59,7 @@ var MessageBoard = Backbone.View.extend({
     this.collection = new Messages();
 
     // this is ugly, unfortunately change or sync doesn't seem to work as they should
-    setInterval(function(){
+    // setInterval(function(){
       that.collection.fetch({
           success: function(items){
             _.each(items.toJSON(), function (item){
@@ -64,17 +67,19 @@ var MessageBoard = Backbone.View.extend({
               that.render(item);
             })
           }
+          // ,change: function() {
+          //   console.log('change fired')
+          // }
       });
-    }, 2000)
+    // }, 2000)
   },
   // runs when the values are changed and prepends it to our html
   render: function(item){
-    // console.log(this.model.get('text'));
-    // console.log('rendering');
-    // return html .. 
-    // console.log(item);
-    // if (item) 
-    console.log(item.username, item.text, item.chatroom);
+    if (item !== undefined) {
+      console.log(item, item.username, item.text, item.chatroom);
+      var rendered = _.template('<%- username %> , <%- text %> , <%- chatroom %>', item);
+      $('body').append(rendered);
+    }
   }
 });
 
