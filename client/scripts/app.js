@@ -72,7 +72,7 @@ var Messages = Backbone.Collection.extend({
       dataType: 'JSON',
       url: that.url
     }, options);
-    return $.ajax(params)
+    return $.ajax(params);
   }
 });
 // view of collection
@@ -82,11 +82,11 @@ var MessageBoard = Backbone.View.extend({
     var that = this;
     this.collection = new Messages();
     var data = this.collection.fetch({
-        success: function(collection, response, options){
-          console.log('beep', data);
-        },
-        error: function() {
-          console.log('error')
+        success: function(items){
+          _.each(items.toJSON(), function (item){
+            console.log(item);
+
+          })
         }
     });
 
