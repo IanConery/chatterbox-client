@@ -19,6 +19,8 @@ app.init = function() {
   // app.fetch();
   var messages = new Messages();
   var messagesView = new MessageBoard({model: messages}); 
+  $('.bottom').prepend(this.messagesView);
+  console.log(this.messagesView)
 }
 
 // app.fetch = function() {
@@ -84,7 +86,8 @@ var MessageBoard = Backbone.View.extend({
     var data = this.collection.fetch({
         success: function(items){
           _.each(items.toJSON(), function (item){
-            console.log(item);
+            // console.log(item);
+            that.render(item);
 
           })
         }
@@ -103,10 +106,13 @@ var MessageBoard = Backbone.View.extend({
     // }, this)
   },
   // runs when the values are changed and prepends it to our html
-  render: function(){
+  render: function(item){
     // console.log(this.model.get('text'));
     // console.log('rendering');
     // return html .. 
+    console.log(item);
+    return _.template('hello');
+    
   }
 });
 
