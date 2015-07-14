@@ -21,37 +21,37 @@ app.init = function() {
   var messagesView = new MessageBoard({model: messages}); 
 }
 
-app.fetch = function() {
-    var data = $.ajax({
-    url: 'https://api.parse.com/1/classes/chatterbox',
-    type: 'GET',
-    contentType: 'application/json',
-    dataType: 'JSON',
-    success: function (data) {
-      console.log('chatterbox: OK ');
-      console.log(data.results);
+// app.fetch = function() {
+//     var data = $.ajax({
+//     url: 'https://api.parse.com/1/classes/chatterbox',
+//     type: 'GET',
+//     contentType: 'application/json',
+//     dataType: 'JSON',
+//     success: function (data) {
+//       console.log('chatterbox: OK ');
+//       console.log(data.results);
 
-      var messages = new Messages(data.results);
-      var messagesView = new MessageBoard({model: messages});    
-    }
-  });
-}
+//       var messages = new Messages(data.results);
+//       var messagesView = new MessageBoard({model: messages});    
+//     }
+//   });
+// }
 
-app.send = function(message) {
-  $.ajax({
-    // This is the url you should use to communicate with the parse API server.
-    url: 'https://api.parse.com/1/classes/chatterbox',
-    type: 'POST',
-    data: JSON.stringify(message),
-    contentType: 'application/json',
-    success: function (data) {
-      console.log('chatterbox: Message sent');
-    },
-    error: function (data) {
-      console.error('chatterbox: Failed to send message');
-    }
-  });
-}
+// app.send = function(message) {
+//   $.ajax({
+//     // This is the url you should use to communicate with the parse API server.
+//     url: 'https://api.parse.com/1/classes/chatterbox',
+//     type: 'POST',
+//     data: JSON.stringify(message),
+//     contentType: 'application/json',
+//     success: function (data) {
+//       console.log('chatterbox: Message sent');
+//     },
+//     error: function (data) {
+//       console.error('chatterbox: Failed to send message');
+//     }
+//   });
+// }
 
 
 /* BACKBONE */
@@ -72,24 +72,29 @@ var Messages = Backbone.Collection.extend({
       dataType: 'JSON',
       url: that.url
     }, options);
-    return $.ajax('')
+    return $.ajax(params)
   }
 });
 // view of collection
 var MessageBoard = Backbone.View.extend({
   // keeps track of the changes
   initialize: function(){
-
-    // we will need that for looping over results
-    this.collection = new Messages();
     var that = this;
-    this.collection.fetch({
-      success: function(){
-        console.log('beep');
-      }
+    this.collection = new Messages();
+    var data = this.collection.fetch({
+        success: function(collection, response, options){
+          console.log('beep', data);
+        },
+        error: function() {
+          console.log('error')
+        }
     });
 
+    // console.log(this.collection.fetch());
 
+    // json 
+    // _.each(data) { item}
+    // return JSON.stringify(model)
 
     //  on success, each loop to return render for each object
 
