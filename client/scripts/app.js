@@ -2,8 +2,10 @@ var app = {}
 
 // initialize the app
 app.init = function() {
+
   var messages = new Messages();
   messages.retrieveMsgs();
+
   var messagesView = new MessagesView({
     el: $('.list'),
     collection: messages
@@ -14,6 +16,9 @@ app.init = function() {
     // formView needs to have access to the collection to pass new messages directly
     collection: messages
   })
+
+  // setInterval(messages.retrieveMsgs.bind(messages), 1000);
+
 }
 
 /* BACKBONE */
