@@ -1,5 +1,5 @@
 var app = {}
-
+var objectStorage = {}
 // initialize the app
 app.init = function() {
 
@@ -17,7 +17,7 @@ app.init = function() {
     collection: messages
   })
 
-  // setInterval(messages.retrieveMsgs.bind(messages), 1000);
+  setInterval(messages.retrieveMsgs.bind(messages), 1000);
 
 }
 
@@ -54,36 +54,42 @@ var Messages = Backbone.Collection.extend({
 });
 
 // View of sindle message / model
-
 var MessageView = Backbone.View.extend({
   render: function() {
     var item = this.model.attributes;
-    if (item !== undefined) {
 
-      // sanitize values
-      for (var key in item) {
-        // make sure item[key] is a truthy value (no null, undefined, etc)
-        if (item.hasOwnProperty(key) && item[key]) {
-          item[key] = sanitize(item[key]);
-          // item[key] = removeTags(item[key]);
+    if (!objectStorage[item.objectId]) {
+      objectStorage[item.objectId] = item.objectId;
+      if (item !== undefined) {
+
+        // sanitize values
+        for (var key in item) {
+          // make sure item[key] is a truthy value (no null, undefined, etc)
+          if (item.hasOwnProperty(key) && item[key]) {
+            item[key] = sanitize(item[key]);
+            item[key] = removeTags(item[key]);
+          }
         }
+
+        // set interpolate for handlebar templating settings via underscore
+        _.templateSettings = {
+          interpolate: /\{\{(.+?)\}\}/g
+        };
+
+        // define underscore template
+        var template = _.template('<div class="col-xs-12"><span class="username">{{user}}</span><span class=" message">{{message}}</span></div>');
+
+        // create output with underscore template & passed values
+        var html = template({
+          user: item.username,
+          message: item.text
+        });
+
+        objectStorage[item.objectId] = item.objectId;
+
+        return this.$el.html(html);
       }
 
-      // set interpolate for handlebar templating settings via underscore
-      _.templateSettings = {
-        interpolate: /\{\{(.+?)\}\}/g
-      };
-
-      // define underscore template
-      var template = _.template('<div class="username">{{user}}</div><div class="message">{{message}}</div>');
-
-      // create output with underscore template & passed values
-      var html = template({
-        user: item.username,
-        message: item.text
-      });
-
-      return this.$el.html(html);
     }
   }
 })
@@ -100,12 +106,10 @@ var MessagesView = Backbone.View.extend({
 
   renderMessage: function(message) {
     var messageView = new MessageView({
-      // el: $('.list'),
       model: message
     });
     var html = messageView.render();
 
-    // console.log(html);
     this.$el.prepend(html);
   }
 });
@@ -135,7 +139,7 @@ var FormView = Backbone.View.extend({
 app.init();
 
 
-
+/* HELPER FUNCTION */
 // various sanitizing functions, because people are assholes
 var sanitize = function(input) {
   var output = input.replace(/<script[^>]*?>.*?<\/script>/gi, '').
