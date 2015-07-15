@@ -78,7 +78,6 @@ var MessageView = Backbone.View.extend({
 
         // define underscore template
         var template = _.template('<div class="col-xs-12"><span class="username">{{user}}</span><span class=" message">{{message}}</span></div>');
-
         // create output with underscore template & passed values
         var html = template({
           user: item.username,
@@ -86,18 +85,30 @@ var MessageView = Backbone.View.extend({
         });
 
         objectStorage[item.objectId] = item.objectId;
-
-        return this.$el.html(html);
+        var regexTest = /TROLL/gi;
+        if((['anonymous', 'anon-a-mouse'].indexOf(item.username) === -1) && !regexTest.test(item.text)){
+          return this.$el.html(html);
+        }
       }
 
     }
   }
 })
 
+var filterVarSet = false;
 // view of collection
 var MessagesView = Backbone.View.extend({
   initialize: function() {
-    this.collection.on('sync', this.render, this);
+    this.collection.on('sync',function(){
+      this.findFilters();
+      this.render();
+    }, this);
+  },
+  findFilters: function(){
+    this.collection.forEach(function(item){
+      var key = item.attributes.roomname;
+      console.log(key);
+    }, this)
   },
   // runs when the values are changed and prepends it to our html
   render: function() {
@@ -108,6 +119,12 @@ var MessagesView = Backbone.View.extend({
     var messageView = new MessageView({
       model: message
     });
+    // if test for filtering by chatroom .. 
+
+    if (filterVarSet) {
+      console.log(message.attributes.roomname);      
+    }
+
     var html = messageView.render();
 
     this.$el.prepend(html);
@@ -115,18 +132,16 @@ var MessagesView = Backbone.View.extend({
 });
 
 var FormView = Backbone.View.extend({
-
   events: {
     'submit #send': 'executeSubmit'
   },
-
   executeSubmit: function(e) {
     e.preventDefault();
     var message = {
       text: $('#message').val(),
-      username: 'Grinding HR Student'
+      username: 'Batman'
     }
-
+    $('#message').val('');
     //var sendmessage = new Message(message);
     // sendmessage.save();
 
